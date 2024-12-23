@@ -1,8 +1,9 @@
-import userModel from "../models/user.model";
+import userModel from "../models/user.model.js";
 
 export const createUser = async ({
-  email,password
+  email , password
 }) => { 
+  console.log( 'Email and password in services are ', email, password)
   if(!email || !password) {
     throw new Error("Email and password are required");
   }
@@ -17,3 +18,5 @@ export const createUser = async ({
 
   return newUser.save();
 }
+
+export default createUser;
