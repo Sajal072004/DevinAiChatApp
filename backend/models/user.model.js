@@ -17,9 +17,8 @@ const userSchema = new mongoose.Schema({
 
   password : {
     type: String,
-    minLength: [6, "password must be at least 6 characters"],
-    maxLength: [50, "password must be at most 50 characters"],
     select:false,
+    
   }
 
  })
@@ -29,6 +28,7 @@ userSchema.statics.hashPassword = async function(password) {
 }
 
 userSchema.methods.isValidPassword = async function(password) {
+  console.log(password , this.password);
   return await bcrypt.compare(password, this.password);
 }
 

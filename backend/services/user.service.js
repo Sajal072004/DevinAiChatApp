@@ -13,7 +13,7 @@ export const createUser = async ({
   
   const newUser = new userModel({
     email,
-    hashPassword
+    password: hashPassword
   });
 
   return newUser.save();
