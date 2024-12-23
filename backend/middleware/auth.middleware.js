@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import redisClient from "../services/redis.service.js";
 
 
 export const authUser = async (req, res, next) => {
@@ -7,6 +8,13 @@ export const authUser = async (req, res, next) => {
 
     if(!token) {
       throw new Error("Unauthorised User");
+    }
+
+    const isBlacklisted = await redisClient.get(token);
+
+    if(isBlacklisted) {
+      res.cookie("token", "");
+      return res.status(401).send("Unauthorised User");
     }
 
 
