@@ -107,7 +107,7 @@ export const getProjectById = async ({ projectId }) => {
 
   const project = await projectModel.findOne({
       _id: projectId
-  }).populate('users')
+  }).populate('users');
 
   return project;
 }
