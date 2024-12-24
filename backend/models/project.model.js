@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 
+
 const projectSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -13,13 +14,9 @@ const projectSchema = new mongoose.Schema({
     users: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'user'
+            ref: 'User'
         }
-    ],
-    fileTree: {
-        type: Object,
-        default: {}
-    },
+    ]
 
 })
 
