@@ -20,9 +20,11 @@ export const initializeSocket = (projectId) => {
 }
 
 export const receiveMessage = (eventName, cb) => {
+  
     socketInstance.on(eventName, cb);
 }
 
 export const sendMessage = (eventName, data) => {
+  console.log("inside send message , ", data);
     socketInstance.emit(eventName, data);
 }

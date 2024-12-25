@@ -56,12 +56,18 @@ io.use(async(socket, next) => {
 
 try {
   io.on("connection", (socket) => {
+
+    socket.roomId = socket.project._id.toString();
+
     console.log("🔗 New client connected:", socket.id);
+    console.log(socket.project._id.toString());
 
-    socket.join(socket.project._id);
+    socket.join(socket.roomId);
 
-    socket.on('project-message', data => {
-      socket.broadcast.to(socket.project._id).emit('project-message')
+    socket.on('project-message', async data => {
+      console.log("message sent" , data);
+      console.log("the room id is ", socket.roomId );
+      socket.broadcast.to(socket.roomId).emit('project-message' , data);
     })
 
     socket.on('event', data => {});
