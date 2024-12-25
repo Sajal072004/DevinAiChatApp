@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from '../config/axios';
 
 const Project = () => {
   const location = useLocation();
@@ -7,28 +8,34 @@ const Project = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState([]);
 
-  const users = [
-    { id: 1, name: 'User One' },
-    { id: 2, name: 'User Two' },
-    { id: 3, name: 'User Three' },
-    { id: 4, name: 'User Four' },
-    { id: 5, name: 'User Five' },
-    { id: 6, name: 'User Six' },
-    { id: 7, name: 'User Seven' },
-    { id: 8, name: 'User Eight' },
-    { id: 9, name: 'User Nine' },
-    { id: 10, name: 'User Ten' },
-  ];
+  const [users, setUsers] = useState([]);
 
-  const handleUserClick = (id) => {
-    if (selectedUserId.includes(id)) {
-      // If the user is already selected, remove them
-      setSelectedUserId(selectedUserId.filter((userId) => userId !== id));
+  useEffect(() => {
+
+    axios
+      .get('/users/all')
+      .then((res) => {
+        setUsers(res.data.users);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+  }, []);
+
+
+ 
+const handleUserClick = (id) => {
+  setSelectedUserId((prevSelectedUserId) => {
+    const newSet = new Set(prevSelectedUserId);
+    if (newSet.has(id)) {
+      newSet.delete(id);
     } else {
-      // Otherwise, add the user
-      setSelectedUserId([...selectedUserId, id]);
+      newSet.add(id);
     }
-  };
+    return Array.from(newSet);
+  });
+};
 
   console.log(location.state);
   return (
@@ -84,14 +91,14 @@ const Project = () => {
           <div className='users flex flex-col gap-2 overflow-y-auto'>
             {users.map((user) => (
               <div
-                key={user.id}
+                key={user._id}
                 className='user flex gap-2 items-center cursor-pointer hover:bg-slate-200 p-2'
-                onClick={() => handleUserClick(user.id)}
+                onClick={() => handleUserClick(user._id)}
               >
                 <div className='aspect-square rounded-full w-fit h-fit flex justify-center items-center bg-slate-600 px-4 py-3 text-white'>
                   <i className='ri-user-fill'></i>
                 </div>
-                <h1 className='font-semibold text-lg'>{user.name}</h1>
+                <h1 className='font-semibold text-lg'>{user.email}</h1>
               </div>
             ))}
           </div>
@@ -112,16 +119,16 @@ const Project = () => {
             <div className='flex flex-col gap-2 overflow-y-auto max-h-96 mb-4'>
               {users.map((user) => (
                 <div
-                  key={user.id}
+                  key={user._id}
                   className={`user flex gap-2 items-center cursor-pointer hover:bg-slate-200 p-2 ${
-                    selectedUserId.includes(user.id) ? 'bg-slate-200' : ''
+                    selectedUserId.includes(user._id) ? 'bg-slate-200' : ''
                   }`}
-                  onClick={() => handleUserClick(user.id)}
+                  onClick={() => handleUserClick(user._id)}
                 >
                   <div className='aspect-square rounded-full w-fit h-fit flex justify-center items-center bg-slate-600 px-4 py-3 text-white'>
                     <i className='ri-user-fill'></i>
                   </div>
-                  <h1 className='font-semibold text-lg'>{user.name}</h1>
+                  <h1 className='font-semibold text-lg'>{user.email}</h1>
                 </div>
               ))}
             </div>
