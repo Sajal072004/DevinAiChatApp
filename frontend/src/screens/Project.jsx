@@ -56,7 +56,7 @@ const Project = () => {
     const message = document.createElement('div');
     message.classList.add(
       'message',
-      'max-w-56',
+      'max-w-72',
       'flex',
       'flex-col',
       'bg-white', // White background for incoming messages
@@ -87,7 +87,7 @@ const Project = () => {
     message.classList.add(
       'message',
       'ml-auto', // Outgoing messages aligned to the right
-      'max-w-56',
+      'max-w-72',
       'flex',
       'flex-col',
       'bg-green-200', // Green background for outgoing messages
