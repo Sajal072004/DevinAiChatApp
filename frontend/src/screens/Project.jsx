@@ -37,6 +37,22 @@ const handleUserClick = (id) => {
   });
 };
 
+const addCollaborators = () => {
+  axios
+    .put('/projects/add-user', {
+      projectId: location.state.project._id,
+      users: selectedUserId,
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  setIsModalOpen(false);
+  setSelectedUserId([]);
+}
+
   console.log(location.state);
   return (
     <main className='h-screen w-screen flex'>
@@ -132,7 +148,7 @@ const handleUserClick = (id) => {
                 </div>
               ))}
             </div>
-            <button className='bg-blue-500 text-white px-4 py-2 rounded-md self-center'>
+            <button className='bg-blue-500 text-white px-4 py-2 rounded-md self-center' onClick={addCollaborators}>
               Add Collaborators
             </button>
           </div>
