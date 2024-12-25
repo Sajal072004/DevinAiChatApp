@@ -41,31 +41,73 @@ const Project = () => {
       });
 
   }, []);
+  
+
+  function scrollToBottom() {
+    messageBox.current.scrollTop = messageBox.current.scrollHeight
+}
 
   const appendIncomingMessage = (messageObject) => {
-
     const messageBox = document.querySelector('.message-box');
     const message = document.createElement('div');
-    message.classList.add('message', 'max-w-56', 'flex', 'flex-col', 'bg-slate-50', 'p-2', 'rounded-md', 'w-fit');
+    message.classList.add(
+      'message',
+      'max-w-56',
+      'flex',
+      'flex-col',
+      'bg-white', // White background for incoming messages
+      'p-2',
+      'rounded-md',
+      'w-fit',
+      'py-1'
+    );
+    const timestamp = new Date().toLocaleString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    });
     message.innerHTML = `
-    <small class="opacity-65 text-xs"> ${messageObject.sender.email} </small>
-    <p class="text-sm"> ${messageObject.message} </p>`
-
+      <small class="jj text-yellow-600" style="font-size: 0.90rem;"> ${messageObject.sender.email} </small>
+      <p class="py-2 text-black" style="font-size: 1.0rem;"> ${messageObject.message} </p>
+      <small class="opacity-65 text-xs text-gray-900" style="font-size: 0.65rem;"> ${timestamp} </small>
+    `;
     messageBox.appendChild(message);
-  }
-
+    scrollToBottom();
+  };
+  
   const appendOutGoingMessage = (messageObject) => {
-
     const messageBox = document.querySelector('.message-box');
     const message = document.createElement('div');
-    message.classList.add('message', 'ml-auto', 'max-w-56', 'flex', 'flex-col', 'bg-slate-50', 'p-2', 'rounded-md', 'w-fit');
+    message.classList.add(
+      'message',
+      'ml-auto', // Outgoing messages aligned to the right
+      'max-w-56',
+      'flex',
+      'flex-col',
+      'bg-green-200', // Green background for outgoing messages
+      'p-2',
+      'rounded-md',
+      'w-fit',
+      'py-1'
+    );
+    const timestamp = new Date().toLocaleString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    });
     message.innerHTML = `
-    <small class="opacity-65 text-xs"> ${user.email} </small>
-    <p class="text-sm"> ${messageObject} </p>`
-
+      <small class="jj text-blue-500" style="font-size: 0.90rem;"> ${user.email} </small>
+      <p class="py-2 text-black" style="font-size: 1.0rem;"> ${messageObject} </p>
+      <small class="opacity-65 text-xs text-gray-900" style="font-size: 0.65rem;"> ${timestamp} </small>
+    `;
     messageBox.appendChild(message);
-
-  }
+    scrollToBottom();
+  };
+  
 
 
 
@@ -132,8 +174,9 @@ const Project = () => {
           </button>
         </header>
         <div className='conversation-area pt-14 pb-10 flex-grow flex flex-col h-full relative'>
-          <div ref={messageBox} className='message-box p-1 flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide'>
-
+          <div ref={messageBox} className='message-box p-1 py-2 flex-grow flex flex-col gap-2 mb-4 overflow-auto max-h-full scrollbar-hide scroll-smooth'
+          
+          >
 
           </div>
           <div className='inputField w-full flex absolute bottom-0'>
