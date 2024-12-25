@@ -3,6 +3,8 @@ import app from "./app.js";
 import { Server } from "socket.io";
 import "dotenv/config.js";
 import jwt from 'jsonwebtoken'
+import mongoose from "mongoose";
+import projectModel from "./models/project.model.js";
 
 const PORT = process.env.PORT || 3000;
 console.log("port ", PORT);
@@ -16,11 +18,21 @@ const io = new Server(serverApp, {
   },
 });
 
-io.use((socket, next) => {
+io.use(async(socket, next) => {
   try {
     const token =
       socket.handshake.auth?.token ||
       socket.handshake.headers.authorization?.split(" ")[1];
+      const projectId = socket.handshake.query.projectId;
+
+      if(!mongoose.Types.ObjectId.isValid(projectId)){
+        return next(new Error('Invalid projectId'));
+      }
+
+      socket.project = await projectModel.findById(projectId);
+
+      
+
 
     if (!token) {
       return next(new Error("Authentication error"));
@@ -46,16 +58,15 @@ try {
   io.on("connection", (socket) => {
     console.log("🔗 New client connected:", socket.id);
 
-    // Listen for a custom event
-    socket.on("event", (data) => {
-      console.log("📩 Received event:", data);
-      socket.emit("response", { message: "Event received!" });
-    });
+    socket.join(socket.project._id);
 
-    // Handle disconnection
-    socket.on("disconnect", (reason) => {
-      console.log(`❌ Client disconnected: ${socket.id}, Reason: ${reason}`);
-    });
+    socket.on('project-message', data => {
+      socket.broadcast.to(socket.project._id).emit('project-message')
+    })
+
+    socket.on('event', data => {});
+    socket.on('disconnect', () => {});
+    
   });
 } catch (error) {
   console.log("error connection ", error);

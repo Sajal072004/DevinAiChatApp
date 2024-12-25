@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from '../config/axios';
+import { initializeSocket, receiveMessage , sendMessage } from '../config/socket';
 
 const Project = () => {
   const location = useLocation();
@@ -13,9 +14,15 @@ const Project = () => {
 
   useEffect(() => {
 
+    initializeSocket(project._id);
+
+    receiveMessage('project-message' , data => {
+      console.log(data);
+    })
+
     axios.get(`/projects/get-project/${location.state.project._id}`).then((res) => {
       setProject(res.data.project);
-    }).catch((err) => {});
+    }).catch((err) => { console.log(err) });
 
     axios
       .get('/users/all')
@@ -29,34 +36,34 @@ const Project = () => {
   }, []);
 
 
- 
-const handleUserClick = (id) => {
-  setSelectedUserId((prevSelectedUserId) => {
-    const newSet = new Set(prevSelectedUserId);
-    if (newSet.has(id)) {
-      newSet.delete(id);
-    } else {
-      newSet.add(id);
-    }
-    return Array.from(newSet);
-  });
-};
 
-const addCollaborators = () => {
-  axios
-    .put('/projects/add-user', {
-      projectId: location.state.project._id,
-      users: selectedUserId,
-    })
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      console.log(err);
+  const handleUserClick = (id) => {
+    setSelectedUserId((prevSelectedUserId) => {
+      const newSet = new Set(prevSelectedUserId);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return Array.from(newSet);
     });
-  setIsModalOpen(false);
-  setSelectedUserId([]);
-}
+  };
+
+  const addCollaborators = () => {
+    axios
+      .put('/projects/add-user', {
+        projectId: location.state.project._id,
+        users: selectedUserId,
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    setIsModalOpen(false);
+    setSelectedUserId([]);
+  }
 
   console.log(location.state);
   return (
@@ -97,9 +104,8 @@ const addCollaborators = () => {
           </div>
         </div>
         <div
-          className={`sidePanel w-full h-full bg-slate-100 absolute transition-all flex flex-col gap-2 ${
-            isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'
-          } top-0`}
+          className={`sidePanel w-full h-full bg-slate-100 absolute transition-all flex flex-col gap-2 ${isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'
+            } top-0`}
         >
           <header className='flex justify-between items-center p-2 px-3 bg-slate-200'>
             <h1 className='font-semibold text-lg'>Collaborators</h1>
@@ -142,9 +148,8 @@ const addCollaborators = () => {
               {users.map((user) => (
                 <div
                   key={user._id}
-                  className={`user flex gap-2 items-center cursor-pointer hover:bg-slate-200 p-2 ${
-                    selectedUserId.includes(user._id) ? 'bg-slate-200' : ''
-                  }`}
+                  className={`user flex gap-2 items-center cursor-pointer hover:bg-slate-200 p-2 ${selectedUserId.includes(user._id) ? 'bg-slate-200' : ''
+                    }`}
                   onClick={() => handleUserClick(user._id)}
                 >
                   <div className='aspect-square rounded-full w-fit h-fit flex justify-center items-center bg-slate-600 px-4 py-3 text-white'>
