@@ -44,7 +44,7 @@ const Home = () => {
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="project p-4 border border-slate-300 rounded-md">
-                    New Project
+                    <span>New Project</span>
                     <i className="ri-link ml-2"></i>
                 </button>
 
