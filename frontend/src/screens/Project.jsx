@@ -41,11 +41,15 @@ const Project = () => {
       });
 
   }, []);
-  
 
-  function scrollToBottom() {
-    messageBox.current.scrollTop = messageBox.current.scrollHeight
+
+ function scrollToBottom() {
+  messageBox.current.scrollTo({
+    top: messageBox.current.scrollHeight,
+    behavior: 'smooth',
+  });
 }
+
 
   const appendIncomingMessage = (messageObject) => {
     const messageBox = document.querySelector('.message-box');
