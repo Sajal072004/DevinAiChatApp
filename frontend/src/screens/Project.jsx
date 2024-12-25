@@ -23,7 +23,7 @@ const Project = () => {
     initializeSocket(project._id);
 
     receiveMessage('project-message', data => {
-      console.log("someone sent the message" , data);
+      console.log("someone sent the message", data);
       appendIncomingMessage(data);
     });
 
@@ -41,31 +41,73 @@ const Project = () => {
       });
 
   }, []);
+  
+
+  function scrollToBottom() {
+    messageBox.current.scrollTop = messageBox.current.scrollHeight
+}
 
   const appendIncomingMessage = (messageObject) => {
-
     const messageBox = document.querySelector('.message-box');
     const message = document.createElement('div');
-    message.classList.add('message' , 'max-w-56' , 'flex' , 'flex-col' , 'bg-slate-50' , 'p-2' , 'rounded-md' , 'w-fit');
+    message.classList.add(
+      'message',
+      'max-w-56',
+      'flex',
+      'flex-col',
+      'bg-white', // White background for incoming messages
+      'p-2',
+      'rounded-md',
+      'w-fit',
+      'py-1'
+    );
+    const timestamp = new Date().toLocaleString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    });
     message.innerHTML = `
-    <small class="opacity-65 text-xs"> ${messageObject.sender.email} </small>
-    <p class="text-sm"> ${messageObject.message} </p>`
-
+      <small class="jj text-yellow-600" style="font-size: 0.90rem;"> ${messageObject.sender.email} </small>
+      <p class="py-2 text-black" style="font-size: 1.0rem;"> ${messageObject.message} </p>
+      <small class="opacity-65 text-xs text-gray-900" style="font-size: 0.65rem;"> ${timestamp} </small>
+    `;
     messageBox.appendChild(message);
-  }
-
+    scrollToBottom();
+  };
+  
   const appendOutGoingMessage = (messageObject) => {
-
     const messageBox = document.querySelector('.message-box');
     const message = document.createElement('div');
-    message.classList.add('message', 'ml-auto' , 'max-w-56' , 'flex' , 'flex-col' , 'bg-slate-50' , 'p-2' , 'rounded-md' , 'w-fit');
+    message.classList.add(
+      'message',
+      'ml-auto', // Outgoing messages aligned to the right
+      'max-w-56',
+      'flex',
+      'flex-col',
+      'bg-green-200', // Green background for outgoing messages
+      'p-2',
+      'rounded-md',
+      'w-fit',
+      'py-1'
+    );
+    const timestamp = new Date().toLocaleString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    });
     message.innerHTML = `
-    <small class="opacity-65 text-xs"> ${user.email} </small>
-    <p class="text-sm"> ${messageObject} </p>`
-
+      <small class="jj text-blue-500" style="font-size: 0.90rem;"> ${user.email} </small>
+      <p class="py-2 text-black" style="font-size: 1.0rem;"> ${messageObject} </p>
+      <small class="opacity-65 text-xs text-gray-900" style="font-size: 0.65rem;"> ${timestamp} </small>
+    `;
     messageBox.appendChild(message);
-
-  }
+    scrollToBottom();
+  };
+  
 
 
 
@@ -106,7 +148,7 @@ const Project = () => {
       sender: user
     });
 
-    
+
 
     console.log("message sent");
 
@@ -118,9 +160,9 @@ const Project = () => {
   console.log(location.state);
   return (
     <main className='h-screen w-screen flex'>
-      <section className='left relative h-full min-w-96 flex flex-col bg-slate-300'>
-        <header className='flex justify-between items-center p-2 px-4 w-full bg-slate-100'>
-          <button className='flex' onClick={() => setIsModalOpen(true)}>
+      <section className='left relative h-screen min-w-96 flex flex-col bg-slate-300'>
+        <header className='flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute z-10 top-0'>
+          <button className='flex gap-2' onClick={() => setIsModalOpen(true)}>
             <i className='ri-add-fill mr-1'></i>
             <p>Add Collaborator</p>
           </button>
@@ -131,14 +173,13 @@ const Project = () => {
             <i className='ri-group-fill'></i>
           </button>
         </header>
-        <div className='conversation-area flex-grow flex flex-col'>
-          <div ref={messageBox} className='message-box flex-grow flex flex-col gap-1 p-1 max-h-[86vh] overflow-auto'>
-            
-            <div className='text-center font-semibold text-xl text-red-600'>Team Conversation</div>
+        <div className='conversation-area pt-14 pb-10 flex-grow flex flex-col h-full relative'>
+          <div ref={messageBox} className='message-box p-1 py-2 flex-grow flex flex-col gap-2 mb-4 overflow-auto max-h-full scrollbar-hide scroll-smooth'
+          
+          >
 
-            
           </div>
-          <div className='inputField w-full flex'>
+          <div className='inputField w-full flex absolute bottom-0'>
             <input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
