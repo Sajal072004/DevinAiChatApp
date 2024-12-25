@@ -7,10 +7,15 @@ const Project = () => {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState([]);
+  const [project, setProject] = useState(location.state.project);
 
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
+
+    axios.get(`/projects/get-project/${location.state.project._id}`).then((res) => {
+      setProject(res.data.project);
+    }).catch((err) => {});
 
     axios
       .get('/users/all')
@@ -96,7 +101,8 @@ const addCollaborators = () => {
             isSidePanelOpen ? 'translate-x-0' : '-translate-x-full'
           } top-0`}
         >
-          <header className='flex justify-end p-2 px-3 bg-slate-200'>
+          <header className='flex justify-between items-center p-2 px-3 bg-slate-200'>
+            <h1 className='font-semibold text-lg'>Collaborators</h1>
             <button
               className='p-2'
               onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
@@ -105,7 +111,7 @@ const addCollaborators = () => {
             </button>
           </header>
           <div className='users flex flex-col gap-2 overflow-y-auto'>
-            {users.map((user) => (
+            {project.users && project.users.map((user) => (
               <div
                 key={user._id}
                 className='user flex gap-2 items-center cursor-pointer hover:bg-slate-200 p-2'
