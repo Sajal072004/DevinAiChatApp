@@ -6,6 +6,25 @@
   box-sizing: border-box;
 }
 
+/* Custom scrollbar styles */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #252323;
+  border-radius: 10px;
+  border: 3px solid #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 body {
   font-family: "Roboto", sans-serif;
   background-color: #f7fafc;
