@@ -65,7 +65,24 @@ try {
     socket.join(socket.roomId);
 
     socket.on('project-message', async data => {
+
       console.log("message sent" , data);
+      const message = data.message;
+
+      const aiIsPresentInMessage = message.includes('@ai');
+
+      const jarvis = {'email': "Jarvis AI"};
+
+      if(aiIsPresentInMessage) {
+        socket.emit('project-message' , {
+          sender: jarvis,
+          message: 'AI is present in the message'
+        })
+
+        return;
+      }
+
+
       console.log("the room id is ", socket.roomId );
       socket.broadcast.to(socket.roomId).emit('project-message' , data);
     })
@@ -76,7 +93,7 @@ try {
     });
     
   });
-  
+
 } catch (error) {
   console.log("error connection ", error);
 }
