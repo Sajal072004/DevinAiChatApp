@@ -1,7 +1,8 @@
 import { useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from '../config/axios';
-import { initializeSocket, receiveMessage , sendMessage } from '../config/socket';
+import { initializeSocket, receiveMessage, sendMessage } from '../config/socket';
+import { UserContext } from '../context/user.context';
 
 const Project = () => {
   const location = useLocation();
@@ -9,16 +10,22 @@ const Project = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState([]);
   const [project, setProject] = useState(location.state.project);
+  const [message, setMessage] = useState([]);
 
   const [users, setUsers] = useState([]);
+
+  const messageBox = React.createRef();
+
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
 
     initializeSocket(project._id);
 
-    receiveMessage('project-message' , data => {
-      console.log(data);
-    })
+    receiveMessage('project-message', data => {
+      console.log("someone sent the message" , data);
+      appendIncomingMessage(data);
+    });
 
     axios.get(`/projects/get-project/${location.state.project._id}`).then((res) => {
       setProject(res.data.project);
@@ -34,6 +41,31 @@ const Project = () => {
       });
 
   }, []);
+
+  const appendIncomingMessage = (messageObject) => {
+
+    const messageBox = document.querySelector('.message-box');
+    const message = document.createElement('div');
+    message.classList.add('message' , 'max-w-56' , 'flex' , 'flex-col' , 'bg-slate-50' , 'p-2' , 'rounded-md' , 'w-fit');
+    message.innerHTML = `
+    <small class="opacity-65 text-xs"> ${messageObject.sender.email} </small>
+    <p class="text-sm"> ${messageObject.message} </p>`
+
+    messageBox.appendChild(message);
+  }
+
+  const appendOutGoingMessage = (messageObject) => {
+
+    const messageBox = document.querySelector('.message-box');
+    const message = document.createElement('div');
+    message.classList.add('message', 'ml-auto' , 'max-w-56' , 'flex' , 'flex-col' , 'bg-slate-50' , 'p-2' , 'rounded-md' , 'w-fit');
+    message.innerHTML = `
+    <small class="opacity-65 text-xs"> ${user.email} </small>
+    <p class="text-sm"> ${messageObject} </p>`
+
+    messageBox.appendChild(message);
+
+  }
 
 
 
@@ -65,6 +97,24 @@ const Project = () => {
     setSelectedUserId([]);
   }
 
+  const send = () => {
+    console.log("the user is ", user);
+    console.log("the message is ", message);
+    appendOutGoingMessage(message);
+    sendMessage('project-message', {
+      message,
+      sender: user
+    });
+
+    
+
+    console.log("message sent");
+
+    setMessage('');
+  };
+
+
+
   console.log(location.state);
   return (
     <main className='h-screen w-screen flex'>
@@ -82,23 +132,23 @@ const Project = () => {
           </button>
         </header>
         <div className='conversation-area flex-grow flex flex-col'>
-          <div className='message-box flex-grow flex flex-col gap-1 p-1'>
-            <div className='incoming message max-w-56 flex flex-col p-2 bg-slate-50 w-fit rounded-md'>
-              <small className='opacity-65 text-xs'>example@gmail.com</small>
-              <p className='text-sm'>Lorem ipsum dollot sit amen</p>
-            </div>
-            <div className='outgoing message flex flex-col p-2 bg-slate-50 w-fit rounded-md ml-auto max-w-56'>
-              <small className='opacity-65 text-xs'>example@gmail.com</small>
-              <p className='text-sm'>Lorem ipsum dollot sit amen hell there how</p>
-            </div>
+          <div ref={messageBox} className='message-box flex-grow flex flex-col gap-1 p-1 max-h-[86vh] overflow-auto'>
+            
+            <div className='text-center font-semibold text-xl text-red-600'>Team Conversation</div>
+
+            
           </div>
           <div className='inputField w-full flex'>
             <input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               type='text'
               placeholder='Type a message'
               className='p-2 px-4 border-none outline-none flex-grow'
             />
-            <button className='px-5 bg-slate-950 text-white'>
+            <button
+              onClick={send}
+              className='px-5 bg-slate-950 text-white'>
               <i className='ri-send-plane-fill'></i>
             </button>
           </div>
