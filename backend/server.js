@@ -5,6 +5,7 @@ import "dotenv/config.js";
 import jwt from 'jsonwebtoken'
 import mongoose from "mongoose";
 import projectModel from "./models/project.model.js";
+import { generateResult } from "./services/ai.service.js";
 
 const PORT = process.env.PORT || 3000;
 console.log("port ", PORT);
@@ -66,19 +67,28 @@ try {
 
     socket.on('project-message', async data => {
 
-      console.log("message sent" , data);
+      console.log("message sent" ,  data);
       const message = data.message;
 
-      const aiIsPresentInMessage = message.includes('@ai');
+      const aiIsPresentInMessage = message.includes('@jarvis');
 
       const jarvis = {'email': "Jarvis AI"};
 
       if(aiIsPresentInMessage) {
-        socket.emit('project-message' , {
-          sender: jarvis,
-          message: 'AI is present in the message'
-        })
 
+        const prompt = message.replace('@ai', '');
+        const result =  JSON.parse(await generateResult(prompt));
+
+        socket.broadcast.to(socket.roomId).emit('project-message' , data);
+
+        io.to(socket.roomId).emit('project-message' , {
+            message: result,
+            sender: {
+              _id: 'ai',
+              email: 'Jarvis'
+            }
+        })
+        
         return;
       }
 
